@@ -27,26 +27,27 @@ venv/
 # Data folders (keep structure, ignore contents)
 # ----------------------------
 
-# Ignore everything inside data/
+# Ignore all files inside raw and processed
 data/raw/*
 data/processed/*
 
-# But keep the folders themselves
+# Do NOT ignore the folders themselves
 !data/raw/
 !data/processed/
 
-# Keep placeholder files if added
+# Allow placeholder files
 !data/raw/.gitkeep
 !data/processed/.gitkeep
 
 # ----------------------------
 # Output folders
 # ----------------------------
+
 outputs/*
 !outputs/
 !outputs/.gitkeep
 
 # ----------------------------
-# CSV files anywhere (safety net)
+# CSV safety net
 # ----------------------------
 *.csv
