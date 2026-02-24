@@ -37,7 +37,7 @@ Final Project/
 └── README.md
 ```
 
-## 3. Installation and Execution
+## Installation and Execution
 
 ```markdown
 ## ⚙️ Installation & Execution
@@ -57,54 +57,81 @@ Run the notebooks in this specific order to maintain data integrity:
 3. 03_resume_skill_analysis.ipynb
 4. 04_genai_skill_extraction.ipynb
 
-## 4. Detailed Pipeline Step (Notebook 01)
-
-I've converted the run configuration into a Markdown table for better visual organization.
-
-```markdown
-## 🛠 01. Data Collection Pipeline
+## Data Collection Pipeline
 **Notebook:** `01_data_collection_jobspy.ipynb`
+
+This notebook constructs a reproducible data collection pipeline to build a real-world dataset of Data Scientist job postings.
 
 ### Run Configuration
 | Parameter | Value |
 | :--- | :--- |
-| **Search Term** | "data scientist" |
-| **Results Per Site** | 100 |
-| **Location** | "San Francisco Bay Area" |
-| **Sites** | ["linkedin", "indeed"] |
+| **SEARCH_TERM** | "data scientist" |
+| **RESULTS_PER_SITE** | 100 |
+| **LOCATION** | "San Francisco Bay Area" |
+| **SITES** | ["linkedin", "indeed"] |
 
-### Key Processing Steps
-* **Standardization:** HTML artifacts are removed and whitespace is normalized.
-* **Unified Text Field:** A new `text` field is created by joining `title + description`.
-* **DuckDB Merge:** Uses SQL-based merging to ensure deterministic runs.
-* **Deduplication:** Uses `job_url` or a fallback signature: `title | company | location | md5(first 500 characters of description)`.
-
-**Output Path:** `data/processed/jobs_combined.csv`
+*A timestamp (`RUN_TS`) is created each run to version outputs: `YYYYMMDD_HHMMSS`.*
 
 ---
 
-## 5. Analysis and GenAI Sections
+### Pipeline Workflow
 
-```markdown
-## 📊 Analysis & GenAI Integration
+#### Step 1 & 2: Scrape and Snapshot
+The pipeline scrapes 100 postings from both LinkedIn and Indeed.
+* **LinkedIn Output:** `data/raw/jobs_linkedin_<timestamp>.csv`
+* **Indeed Output:** `data/raw/jobs_indeed_<timestamp>.csv`
+
+#### Step 3: Schema Standardization
+Standardizes platform outputs to ensure consistent downstream analysis.
+* **Cleaning:** Removes HTML artifacts and normalizes whitespace.
+* **Feature Engineering:** Constructs a unified `text` field by combining `title` + `description`.
+
+#### Step 4: Controlled Dataset Merge
+Uses **DuckDB** to combine only the two files generated during the current run, preventing historical data accumulation.
+```sql
+CREATE OR REPLACE TABLE combined_jobs AS
+SELECT * FROM read_csv_auto('linkedin_file')
+UNION ALL
+SELECT * FROM read_csv_auto('indeed_file');
+```
+
+---
+
+## Analysis Notebooks
 
 ### 02. Text EDA Baseline
-`02_text_eda_baseline.ipynb`
-* Performs descriptive statistics and word frequency analysis.
-* Identifies common keywords and prepares the corpus.
+**Notebook:** `02_text_eda_baseline.ipynb`
+
+This notebook performs exploratory text analysis on the combined dataset. Key tasks include:
+* **Descriptive Statistics:** Analyzing the distribution of job postings by source and location.
+* **Token Analysis:** Word frequency analysis and common keyword identification.
+* **Corpus Preparation:** Cleaning and preparing the text for downstream skill extraction.
+
+---
 
 ### 03. Resume Skill Analysis
-`03_resume_skill_analysis.ipynb`
-* Compares candidate resumes against market data.
-* Performs skill matching, gap identification, and alignment scoring.
+**Notebook:** `03_resume_skill_analysis.ipynb`
 
-### 04. GenAI Integration
-`genai_integration.ipynb`
-* Uses LLMs for structured skill extraction and categorization (e.g., Cloud, ML, Programming).
-* Provides semantic comparison between resumes and market demand.
+This notebook compares extracted job market skills against a candidate resume. Steps include:
+* **Resume Ingestion:** Parsing text from a candidate's resume.
+* **Skill Matching:** Identifying overlaps between the resume and the job corpus.
+* **Gap Analysis:** Highlighting missing skills based on current market demand.
+* **Alignment Scoring:** Generating a numerical score for candidate-to-market fit.
+
+---
+
+## 🤖 GenAI Integration
+**Notebook:** `04_genai_integration.ipynb`
+
+This notebook integrates a Large Language Model (LLM) to extend baseline NLP methods. Typical tasks include:
+* **Structured Skill Extraction:** Using LLMs to pull specific skills from dense descriptions.
+* **Categorization:** Automatically grouping skills into categories like Programming, Cloud, or ML Frameworks.
+* **Market Summarization:** Generating high-level summaries of market demand trends.
+* **Semantic Comparison:** Performing deep semantic matching between resume content and market requirements.
 
 ---
 
 ## 📝 Reproducibility Notes
-* Job postings are scraped live; timestamped snapshots are saved in `data/raw/` to preserve specific runs.
-* Always use `data/processed/jobs_combined.csv` for downstream tasks unless re-scraping.
+* **Live Data:** Job postings are scraped live and may change between runs.
+* **Snapshots:** To preserve results, timestamped raw snapshots are saved in `data/raw/`.
+* **Default Data:** Downstream analysis should always use `data/processed/jobs_combined.csv` unless a full re-scrape is intended.
