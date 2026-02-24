@@ -1,16 +1,52 @@
+# ----------------------------
 # Python
+# ----------------------------
 __pycache__/
-*.pyc
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+dist/
+build/
+.env
+.venv
+venv/
 
+# ----------------------------
 # Jupyter
+# ----------------------------
 .ipynb_checkpoints/
 
-# OS
+# ----------------------------
+# macOS
+# ----------------------------
 .DS_Store
 
-# Data outputs
-*.csv
+# ----------------------------
+# Data folders (keep structure, ignore contents)
+# ----------------------------
 
-# Project data folders
-data/raw/
-data/processed/
+# Ignore everything inside data/
+data/raw/*
+data/processed/*
+
+# But keep the folders themselves
+!data/raw/
+!data/processed/
+
+# Keep placeholder files if added
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# ----------------------------
+# Output folders
+# ----------------------------
+outputs/*
+!outputs/
+!outputs/.gitkeep
+
+# ----------------------------
+# CSV files anywhere (safety net)
+# ----------------------------
+*.csv
