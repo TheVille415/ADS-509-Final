@@ -121,7 +121,7 @@ This notebook compares extracted job market skills against a candidate resume. S
 ---
 
 ## 04. GenAI Integration
-**Notebook:** `04_genai_integration.ipynb`
+**Notebook:** `04_genai_skill_extraction.ipynb`
 
 This notebook integrates a Large Language Model (LLM) to extend baseline NLP methods. Typical tasks include:
 * **Structured Skill Extraction:** Using LLMs to pull specific skills from dense descriptions.
@@ -129,9 +129,43 @@ This notebook integrates a Large Language Model (LLM) to extend baseline NLP met
 * **Market Summarization:** Generating high-level summaries of market demand trends.
 * **Semantic Comparison:** Performing deep semantic matching between resume content and market requirements.
 
+### Groq API Setup (Required for Notebook 04)
+
+Notebook `04_genai_skill_extraction.ipynb` uses the Groq API (LLaMA 3.1) to extract structured skills.
+
+### 1) Create a Groq API key
+Go to: https://console.groq.com/
+
+Create an API key from your dashboard.
+
+### 2) Add your key to a `.env` file
+Create a file named `.env` in the project root (same level as `README.md`):
+
+```bash
+GROQ_API_KEY=your_api_key_here
+```
+
+### 3) Do not commit .env
+
+Make sure .env is listed in your .gitignore.
+
+### 4) Verify it loads
+
+Notebook 04 loads the key using python-dotenv and expects GROQ_API_KEY to be available.
+
+---
+
+## ✅ Quick `.gitignore` line (if you need it)
+
+Add this to `.gitignore`:
+
+```gitignore
+.env
+```
+
 ---
 
 ## 📝 Reproducibility Notes
 * **Live Data:** Job postings are scraped live and may change between runs.
 * **Snapshots:** To preserve results, timestamped raw snapshots are saved in `data/raw/`.
-* **Default Data:** Downstream analysis should always use `data/processed/jobs_combined.csv` unless a full re-scrape is intended.
+* **Default Data:** Downstream analysis should always use `data/processed/jobs_combined_dedup.csv` unless a full re-scrape is intended.
