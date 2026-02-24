@@ -120,7 +120,7 @@ This notebook compares extracted job market skills against a candidate resume. S
 
 ---
 
-## 🤖 GenAI Integration
+## 04. GenAI Integration
 **Notebook:** `04_genai_integration.ipynb`
 
 This notebook integrates a Large Language Model (LLM) to extend baseline NLP methods. Typical tasks include:
